@@ -13,7 +13,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-API_KEY = "fzm_2b4ecd31_jz2efhnt"  # Frozen API key
+API_KEY = "fzm_2820da5f_578cnp4n"  # Frozen API key
 
 # Search songs using FrozenMusic API
 @app.get("/api/search")
