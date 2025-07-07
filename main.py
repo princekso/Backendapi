@@ -24,3 +24,14 @@ def search(query: str):
         return res.json()
     except Exception as e:
         return {"error": str(e)}
+
+@app.get("/api/song/{song_id}")
+def get_song(song_id: str):
+    try:
+        res = requests.get(
+            f"https://frozenmusic.vercel.app/api/v1/song/{song_id}",
+            headers={"X-API-Key": API_KEY}
+        )
+        return res.json()
+    except Exception as e:
+        return {"error": str(e)}
