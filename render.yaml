@@ -1,7 +1,0 @@
-services:
-  - type: web
-    name: chintu-music-node
-    env: node
-    plan: free
-    buildCommand: npm install
-    startCommand: npm start
