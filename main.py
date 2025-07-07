@@ -1,11 +1,10 @@
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from yt_dlp import YoutubeDL
-import requests
 
 app = FastAPI()
 
-# Allow frontend access
+# CORS for frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -14,28 +13,26 @@ app.add_middleware(
 )
 
 @app.get("/api/search")
-def search_song(query: str = Query(..., description="Song name to search")):
+def search_song(query: str = Query(..., description="Song name")):
     try:
-        # Step 1: Search song using YouTube API (unofficial)
-        res = requests.get(f"https://ytsearch-api.vercel.app/api/search?q={query}").json()
-        first_result = res["data"]["videos"][0]
-        url = f"https://www.youtube.com/watch?v={first_result['videoId']}"
-
-        # Step 2: Get direct audio link using yt-dlp
-        ydl_opts = {
-            'format': 'bestaudio/best',
-            'quiet': True,
-            'skip_download': True,
-        }
-
+        # Search on YouTube
+        ydl_opts = {'quiet': True}
         with YoutubeDL(ydl_opts) as ydl:
+            result = ydl.extract_info(f"ytsearch:{query}", download=False)['entries'][0]
+
+            url = result['webpage_url']
+            title = result['title']
+            channel = result['uploader']
+            thumbnail = result['thumbnail']
+
+            # Get direct audio stream
             info = ydl.extract_info(url, download=False)
-            audio_url = info["url"]
+            audio_url = info['url']
 
         return {
-            "title": first_result["title"],
-            "channel": first_result["channel"],
-            "thumbnail": first_result["thumbnail"],
+            "title": title,
+            "channel": channel,
+            "thumbnail": thumbnail,
             "audio_url": audio_url,
             "source_url": url,
         }
