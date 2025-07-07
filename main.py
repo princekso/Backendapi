@@ -4,6 +4,7 @@ import requests
 
 app = FastAPI()
 
+# Allow all CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -12,25 +13,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-API_KEY = "fzm_2b4ecd31_jz2efhnt"
+API_KEY = "fzm_2b4ecd31_jz2efhnt"  # Frozen API key
 
+# Search songs using FrozenMusic API
 @app.get("/api/search")
 def search(query: str):
     try:
         res = requests.get(
             f"https://frozenmusic.vercel.app/api/v1/search?query={query}",
-            headers={"X-API-Key": API_KEY}
+            headers={"X-API-Key": API_KEY},
+            timeout=10
         )
         return res.json()
     except Exception as e:
         return {"error": str(e)}
 
+# Get song details from saavn.dev API
 @app.get("/api/song/{song_id}")
 def get_song(song_id: str):
     try:
         res = requests.get(
-            f"https://frozenmusic.vercel.app/api/v1/song/{song_id}",
-            headers={"X-API-Key": API_KEY}
+            f"https://saavn.dev/api/songs/{song_id}",
+            timeout=10
         )
         return res.json()
     except Exception as e:
